@@ -31,7 +31,7 @@ const DiaryEditor = () => {
       contentInput.current.focus();
       return;
     }
-    alert("저장 성공");
+    alert("저장성공");
   };
 
   return (
