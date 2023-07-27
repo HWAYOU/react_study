@@ -48,12 +48,20 @@ function App() {
     dataId.current += 1; //dataId.current++; 이렇게도 가능
     setData([newItem, ...data]); //새로운 일기를 배열 제일 앞에 오도록
   };
+
+  //일기 아이템을 삭제하는 함수
+  const onDelete = (targetId) => {
+    console.log(`${targetId}가 삭제됩니다.`);
+    const newDiaryList = data.filter((item) => targetId !== item.id);
+    //매개변수로 받은 id와 일치하지 않는 id들로 필터링하여 새로운 배열 생성
+    setData(newDiaryList);
+  };
   console.log(data);
 
   return (
     <div className="App">
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList diaryList={data} />
+      <DiaryList onDelete={onDelete} diaryList={data} />
     </div>
   );
 }
