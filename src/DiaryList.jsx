@@ -22,3 +22,6 @@ DiaryList.defaultProps = {
   diaryList: [],
 };
 export default DiaryList;
+
+//리액트에서는 같은 레벨에서 데이터를 바로 주고받을 수없다 단방향으로만 데이터가 흐른다
+// 두 컴포넌트에서 사용하는 데이터를 부모 컴포넌트에 올려서 상태변화함수는 editor에(event) 상태 테이터는 리스트에(data)

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-const DiaryEditor = () => {
+const DiaryEditor = ({ onCreate }) => {
   const authorInput = useRef();
   const contentInput = useRef();
   //useRef 함수의 반환값을 authorInput에 넣어준다
@@ -21,6 +21,7 @@ const DiaryEditor = () => {
     });
   };
 
+  //새로운 일기를 저장하는 함수
   const handleSubmit = () => {
     if (state.author.length < 1) {
       authorInput.current.focus(); //input에 focus해라
@@ -31,7 +32,10 @@ const DiaryEditor = () => {
       contentInput.current.focus();
       return;
     }
+    onCreate(state.author, state.content, state.emotion);
     alert("저장성공");
+
+    setState({ author: "", content: "", emotion: 1 });
   };
 
   return (
