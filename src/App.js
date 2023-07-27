@@ -34,7 +34,7 @@ function App() {
   //useRef는 컴포넌트 리렌더링 되더라도 값이 초기값으로 변동되지 않고 유지된다. 고유식별자에 사용하기에 유용하다.
   const dataId = useRef(0);
 
-  //일기 아이템을 추가하는 함수
+  //✅일기 아이템을 추가하는 함수
   const onCreate = (author, content, emotion) => {
     const created_data = new Date().getTime(); //시간을 밀리세컨드로
     const newItem = {
@@ -49,19 +49,27 @@ function App() {
     setData([newItem, ...data]); //새로운 일기를 배열 제일 앞에 오도록
   };
 
-  //일기 아이템을 삭제하는 함수
-  const onDelete = (targetId) => {
-    console.log(`${targetId}가 삭제됩니다.`);
+  //✅일기 아이템을 삭제하는 함수(filter사용)
+  const onRemove = (targetId) => {
     const newDiaryList = data.filter((item) => targetId !== item.id);
     //매개변수로 받은 id와 일치하지 않는 id들로 필터링하여 새로운 배열 생성
     setData(newDiaryList);
   };
+
+  //✅일기 아이템을 수정하는 함수(map과 삼항연산자 사용)
+  const onEdit = (targetId, newContent) => {
+    const newDiaryList = data.map((item) =>
+      item.id === targetId ? { ...item, content: newContent } : item
+    );
+    setData(newDiaryList);
+  };
+
   console.log(data);
 
   return (
     <div className="App">
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList onDelete={onDelete} diaryList={data} />
+      <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
     </div>
   );
 }
