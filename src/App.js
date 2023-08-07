@@ -1,35 +1,36 @@
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-import { useState, useRef } from "react";
-import Lifecycle from "./Lifecycle";
-
-// const dummyList = [
-//   {
-//     id: 1,
-//     author: "강화영",
-//     content: "나는 야인이 될거야",
-//     emotion: 4,
-//     created_data: new Date().getTime(),
-//   },
-//   {
-//     id: 2,
-//     author: "강화도",
-//     content: "호로로로로로롤",
-//     emotion: 5,
-//     created_data: new Date().getTime(),
-//   },
-//   {
-//     id: 3,
-//     author: "강감찬",
-//     content: "도로로로로로롱",
-//     emotion: 3,
-//     created_data: new Date().getTime(),
-//   },
-// ];
+import { useState, useRef, useEffect } from "react";
 
 function App() {
   const [data, setData] = useState([]);
+
+  const getData = async () => {
+    //fetch로 api호출해서 데이터 가져오기
+    //async/await로 데이터 패치작업은 동기적으로 실행한다
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/comments"
+    ).then((res) => res.json());
+
+    //패치한 데이터 가공
+    const initData = res.slice(0, 20).map((it) => {
+      return {
+        author: it.email,
+        content: it.body,
+        emotion: Math.floor(Math.random() * 5) + 1,
+        created_date: new Date().getTime(),
+        id: dataId.current++,
+      };
+    });
+
+    setData(initData);
+  };
+
+  //제일 처음 마운트 될 때 데이터 패치한다
+  useEffect(() => {
+    getData();
+  }, []);
 
   //⚡아이템 id 왜 useRef 쓰는지?
   //useRef는 컴포넌트 리렌더링 되더라도 값이 초기값으로 변동되지 않고 유지된다. 고유식별자에 사용하기에 유용하다.
@@ -69,7 +70,6 @@ function App() {
 
   return (
     <div className="App">
-      <Lifecycle />
       <DiaryEditor onCreate={onCreate} />
       <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
     </div>
