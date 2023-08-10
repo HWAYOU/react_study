@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const DiaryItem = ({
   onEdit,
@@ -9,6 +9,11 @@ const DiaryItem = ({
   emotion,
   created_data,
 }) => {
+  useEffect(() => {
+    //수정되거나 추가된 item이 있을 경우에만 렌더링되는 최적화!
+    console.log(`${id}번째 아이템 렌더!`);
+  });
+
   //수정상태인지 아닌지에 대한 상태
   const [isEdit, setIsEdit] = useState(false);
   //toggleIsEdit 함수가 실행되면 수정상태가 됐다가 안됐다가
@@ -86,4 +91,4 @@ const DiaryItem = ({
   );
 };
 
-export default DiaryItem;
+export default React.memo(DiaryItem);

@@ -1,6 +1,11 @@
-import { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
+//onCreate함수가 재생성될 때마다 에디터 리렌더링된다 -> onCreate함수가 재생성되지 않도록 해야한다
 const DiaryEditor = ({ onCreate }) => {
+  useEffect(() => {
+    console.log("렌더링됨");
+  });
+
   const authorInput = useRef();
   const contentInput = useRef();
   //useRef 함수의 반환값을 authorInput에 넣어준다
@@ -76,4 +81,4 @@ const DiaryEditor = ({ onCreate }) => {
     </div>
   );
 };
-export default DiaryEditor;
+export default React.memo(DiaryEditor);
