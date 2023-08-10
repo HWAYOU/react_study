@@ -1,10 +1,44 @@
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-import { useCallback, useState, useRef, useEffect, useMemo } from "react";
+import { useCallback, useRef, useEffect, useMemo, useReducer } from "react";
+
+//✅useReducer : app컴포넌트가 너무 길어지고 무거워진다 -> 복잡한 상태 관리 로직 분리하기
+const reducer = (state, action) => {
+  //action: 어떤 상태변화를 일으켜야하는지에 대한 정보를 가지고 있는 객체
+  switch (action.type) {
+    case "INIT": {
+      return action.data; //action 객체의 data 속성에 initData가 전달되고, 이 리턴값은 data를 변경시킨다
+    }
+    case "CREATE": {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date,
+      };
+      return [newItem, ...state];
+    }
+    case "REMOVE": {
+      return state.filter((it) => it.id !== action.targetId);
+    }
+    case "EDIT": {
+      return state.map((it) =>
+        it.id === action.targetId ? { ...it, content: action.newContent } : it
+      );
+    }
+    default:
+      return state;
+  }
+};
 
 function App() {
-  const [data, setData] = useState([]);
+  const [data, dispatch] = useReducer(reducer, []);
+  //초기값이 빈 배열인 data 상태
+  //dispatch를 호출하면 액션객체를 reducer로 전달하고 상태변화 처리함수인 reducer가 처리하게 된다
+
+  //⚡아이템 id 왜 useRef 쓰는지?
+  //useRef는 컴포넌트 리렌더링 되더라도 값이 초기값으로 변동되지 않고 유지된다. 고유식별자에 사용하기에 유용하다.
+  const dataId = useRef(0);
 
   const getData = async () => {
     //fetch로 api호출해서 데이터 가져오기
@@ -24,7 +58,7 @@ function App() {
       };
     });
 
-    setData(initData);
+    dispatch({ type: "INIT", data: initData });
   };
 
   //제일 처음 마운트 될 때 데이터 패치한다
@@ -32,39 +66,22 @@ function App() {
     getData();
   }, []);
 
-  //⚡아이템 id 왜 useRef 쓰는지?
-  //useRef는 컴포넌트 리렌더링 되더라도 값이 초기값으로 변동되지 않고 유지된다. 고유식별자에 사용하기에 유용하다.
-  const dataId = useRef(0);
-
-  //✅일기 아이템을 추가하는 함수
   //✅useCallback : 제일 처음 마운트될 때 한번 만들고 이걸 재사용할 수 있도록
   const onCreate = useCallback((author, content, emotion) => {
-    const created_data = new Date().getTime(); //시간을 밀리세컨드로
-    const newItem = {
-      //⛔객체인데 키값이 아니라 그냥 키만 이렇게 줘도 되나???
-      author,
-      content,
-      emotion,
-      created_data,
-      id: dataId.current, //0
-    };
-    dataId.current += 1; //dataId.current++; 이렇게도 가능
-    setData((data) => [newItem, ...data]); //⚡함수형 업데이트 : 최신의 데이터를 인자를 통해 참조할수있음
-  }, []); //⚡제일 처음 마운트 되는 시점에 data는 빈배열이다.
+    dispatch({
+      type: "CREATE",
+      data: { author, content, emotion, id: dataId.current },
+    });
+    dataId.current += 1;
+  }, []);
+  //⚡dispatch를 호출하면 알아서 현재의 state를 자동으로 reducer 함수가 참조한다. useCallback을 사용하면서 dependency array를 신경쓰지 않아도 된다.
 
-  //✅일기 아이템을 삭제하는 함수(filter사용)
   const onRemove = useCallback((targetId) => {
-    //매개변수로 받은 id와 일치하지 않는 id들로 필터링하여 새로운 배열 생성
-    setData((data) => data.filter((item) => targetId !== item.id));
+    dispatch({ type: "REMOVE", targetId });
   }, []);
 
-  //✅일기 아이템을 수정하는 함수(map과 삼항연산자 사용)
   const onEdit = useCallback((targetId, newContent) => {
-    setData((data) =>
-      data.map((item) =>
-        item.id === targetId ? { ...item, content: newContent } : item
-      )
-    );
+    dispatch({ type: "EDIT", targetId, newContent });
   }, []);
 
   //✅리턴을 가지는 함수를 Memoization하기 (연산최적화 : 어떤 값이 변할 때만 연산 수행)
