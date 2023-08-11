@@ -1,7 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
+import { DiaryDispatchContext } from "./App";
 
 //onCreate함수가 재생성될 때마다 에디터 리렌더링된다 -> onCreate함수가 재생성되지 않도록 해야한다
-const DiaryEditor = ({ onCreate }) => {
+const DiaryEditor = () => {
+  const { onCreate } = useContext(DiaryDispatchContext);
+
   useEffect(() => {
     console.log("렌더링됨");
   });

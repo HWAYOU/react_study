@@ -1,6 +1,11 @@
+import { useContext } from "react";
 import DiaryItem from "./DiaryItem";
+import { DiaryStateContext } from "./App";
 
-const DiaryList = ({ onEdit, onRemove, diaryList }) => {
+const DiaryList = () => {
+  // 3) context에서 값 사용하기(꺼내오기)
+  const diaryList = useContext(DiaryStateContext);
+
   return (
     <div className="DiaryList">
       <h2>일기리스트</h2>
@@ -10,12 +15,7 @@ const DiaryList = ({ onEdit, onRemove, diaryList }) => {
           //✅Each child in a list should have a unique "key" prop. 각각의 item들은 고유의 키가 있어야 한다.
           //map의 두번째 매개변수인 idx를 사용할 경우 추가/수정으로 배열을 바꿀 때 리액트에서 문제가 생길 수 있으므로 고유한 id로 key를 설정
           //✅컴포넌트 분할하기 : 아이템을 삭제/수정하는 기능이 있어야 하는데 그 기능을 넣기에는 너무 복잡하므로
-          <DiaryItem
-            key={item.id}
-            {...item}
-            onRemove={onRemove}
-            onEdit={onEdit}
-          />
+          <DiaryItem key={item.id} {...item} />
         ))}
       </div>
     </div>

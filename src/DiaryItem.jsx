@@ -1,18 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useContext } from "react";
+import { DiaryDispatchContext } from "./App";
 
-const DiaryItem = ({
-  onEdit,
-  onRemove,
-  id,
-  author,
-  content,
-  emotion,
-  created_data,
-}) => {
-  useEffect(() => {
-    //수정되거나 추가된 item이 있을 경우에만 렌더링되는 최적화!
-    console.log(`${id}번째 아이템 렌더!`);
-  });
+const DiaryItem = ({ id, author, content, emotion, created_data }) => {
+  const { onEdit, onRemove } = useContext(DiaryDispatchContext);
 
   //수정상태인지 아닌지에 대한 상태
   const [isEdit, setIsEdit] = useState(false);
